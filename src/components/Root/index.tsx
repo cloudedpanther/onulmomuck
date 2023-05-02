@@ -5,9 +5,9 @@ const Root = () => {
     return (
         <>
             <Header />
-            <div className="pt-16">
+            <main className="pt-16 h-screen box-border">
                 <Outlet />
-            </div>
+            </main>
         </>
     )
 }
