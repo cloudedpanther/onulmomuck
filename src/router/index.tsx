@@ -17,14 +17,6 @@ const router = createBrowserRouter([
                 element: <Home />,
             },
             {
-                path: 'login',
-                element: <Login />,
-            },
-            {
-                path: 'join',
-                element: <Join />,
-            },
-            {
                 path: 'mypage',
                 element: <MyPage />,
             },
@@ -37,6 +29,14 @@ const router = createBrowserRouter([
                 element: <WritePost />,
             },
         ],
+    },
+    {
+        path: 'login',
+        element: <Login />,
+    },
+    {
+        path: 'join',
+        element: <Join />,
     },
 ])
 
