@@ -24,9 +24,12 @@ const Header = () => {
     }
 
     return (
-        <div className="fixed navbar bg-amber-100 py-0">
+        <div className="fixed navbar bg-white py-0">
             <div className="flex-1">
-                <Link to="/" className="btn btn-ghost  hover:bg-inherit normal-case text-xl">
+                <Link
+                    to="/"
+                    className="btn btn-ghost  hover:bg-inherit normal-case text-xl text-orange-500"
+                >
                     오늘모먹
                 </Link>
             </div>
