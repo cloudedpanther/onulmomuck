@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 const Login = () => {
     return (
         <>
-            <div className="hero h-full bg-base-200">
-                <div className="hero-content flex-col w-3/5">
+            <div className="flex justify-center pt-16 h-screen bg-base-200">
+                <div className="flex-col w-3/5">
                     <div className="text-center">
                         <h2 className="text-5xl font-bold mb-8">로그인</h2>
                     </div>
