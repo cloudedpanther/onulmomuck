@@ -3,10 +3,13 @@ import { Link } from 'react-router-dom'
 const Login = () => {
     return (
         <>
-            <div className="flex justify-center pt-16 h-screen bg-base-200">
-                <div className="flex-col w-3/5">
+            <div
+                className="flex justify-center py-14 bg-base-200"
+                style={{ minHeight: 'calc(100vh - 4rem)' }}
+            >
+                <div className="flex flex-col w-3/5 items-center">
                     <div className="text-center">
-                        <h2 className="text-5xl font-bold mb-8">로그인</h2>
+                        <h2 className="text-4xl font-bold mb-8">로그인</h2>
                     </div>
                     <div className="card flex-shrink-0 w-full max-w-lg shadow-2xl bg-base-100">
                         <form className="card-body">

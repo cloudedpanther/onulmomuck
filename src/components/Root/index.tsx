@@ -5,7 +5,7 @@ const Root = () => {
     return (
         <>
             <Header />
-            <main className="pt-16 h-screen box-border">
+            <main className="pt-16 h-full box-border">
                 <Outlet />
             </main>
         </>
