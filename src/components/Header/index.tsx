@@ -35,8 +35,7 @@ const Header = () => {
             </div>
             <div className="flex-none">
                 <div className="hidden md:flex items-center">
-                    {isLoggedIn ? <p>고영준님</p> : null}
-                    <ul className="menu menu-horizontal bg-inherit rounded-box p-2">
+                    <ul className="menu menu-horizontal bg-inherit rounded-box p-2 text-sm">
                         <Menu
                             isLoggedIn={isLoggedIn}
                             onLogin={handleLogin}
