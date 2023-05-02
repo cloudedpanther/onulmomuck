@@ -3,16 +3,6 @@ import Menu from './Menu'
 import { useState } from 'react'
 
 const Header = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(true)
-
-    const handleLogin = () => {
-        setIsLoggedIn(true)
-    }
-
-    const handleLogout = () => {
-        setIsLoggedIn(false)
-    }
-
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
     const handleDropdownToggle = () => {
@@ -36,11 +26,7 @@ const Header = () => {
             <div className="flex-none">
                 <div className="hidden md:flex items-center">
                     <ul className="menu menu-horizontal bg-inherit rounded-box p-2 text-sm">
-                        <Menu
-                            isLoggedIn={isLoggedIn}
-                            onLogin={handleLogin}
-                            onLogout={handleLogout}
-                        />
+                        <Menu />
                     </ul>
                 </div>
 
@@ -64,11 +50,7 @@ const Header = () => {
                         tabIndex={0}
                         className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
                     >
-                        <Menu
-                            isLoggedIn={isLoggedIn}
-                            onLogin={handleLogin}
-                            onLogout={handleLogout}
-                        />
+                        <Menu />
                     </ul>
                 </div>
             </div>

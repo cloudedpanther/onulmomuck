@@ -1,18 +1,12 @@
 import { Link } from 'react-router-dom'
+import { useRecoilState } from 'recoil'
+import { isLoggedInSelector } from '../../store'
 
-interface IMenu {
-    isLoggedIn: boolean
-    onLogin: () => void
-    onLogout: () => void
-}
-
-const Menu = ({ isLoggedIn, onLogin, onLogout }: IMenu) => {
-    const handleLogin = () => {
-        onLogin()
-    }
+const Menu = () => {
+    const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInSelector)
 
     const handleLogout = () => {
-        onLogout()
+        setIsLoggedIn(false)
     }
 
     return (
@@ -38,7 +32,7 @@ const Menu = ({ isLoggedIn, onLogin, onLogout }: IMenu) => {
             ) : (
                 <>
                     <li>
-                        <Link className="focus:bg-inherit" to="/login" onClick={handleLogin}>
+                        <Link className="focus:bg-inherit" to="/login">
                             로그인/회원가입
                         </Link>
                     </li>
