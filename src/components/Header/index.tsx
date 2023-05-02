@@ -24,7 +24,7 @@ const Header = () => {
     }
 
     return (
-        <div className="fixed navbar bg-white py-0">
+        <div className="fixed navbar bg-white py-0 shadow">
             <div className="flex-1">
                 <Link
                     to="/"
