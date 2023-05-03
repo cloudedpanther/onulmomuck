@@ -1,12 +1,69 @@
 import { Link, Navigate } from 'react-router-dom'
 import { useRecoilState } from 'recoil'
 import { isLoggedInSelector } from '../../store'
+import { useForm } from 'react-hook-form'
+
+const LoginFormKeys = {
+    EMAIL: 'email',
+    PASSWORD: 'password',
+} as const
+
+const inputList = [
+    {
+        id: LoginFormKeys.EMAIL,
+        labelText: 'Email',
+        settings: {
+            type: 'email',
+            placeholder: 'email',
+        },
+        registerSettings: {
+            required: '이메일을 적어주세요',
+            maxLength: {
+                value: 50,
+                message: '이메일은 50자리 보다 짧아야 합니다.',
+            },
+            pattern: {
+                value: /^[0-9a-zA-Z]([-_.0-9a-zA-Z])*@[0-9a-zA-Z]([-.0-9a-zA-Z])*\.[0-9a-zA-Z]{2,5}$/,
+                message: '이메일 형식에 맞지 않습니다.',
+            },
+        },
+    },
+    {
+        id: LoginFormKeys.PASSWORD,
+        labelText: 'Password',
+        settings: {
+            type: 'password',
+            placeholder: 'password',
+        },
+        registerSettings: {
+            required: '비밀번호를 적어주세요',
+            minLength: {
+                value: 8,
+                message: '비밀번호는 8자리 보다 길어야 합니다.',
+            },
+            maxLength: {
+                value: 16,
+                message: '비밀번호는 16자리 보다 짧아야 합니다.',
+            },
+            pattern: {
+                value: /^([!@#$%^&*0-9a-zA-Z]){8,16}$/,
+                message:
+                    '비밀번호에는 숫자, 영어 대소문자 또는 특수문자(!,@,#,$,%,^,&,*)만 포함될 수 있습니다.',
+            },
+        },
+    },
+]
 
 const Login = () => {
     const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInSelector)
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm()
+
+    const onValid = () => {
         setIsLoggedIn(true)
     }
 
@@ -24,29 +81,30 @@ const Login = () => {
                             <h2 className="text-4xl font-bold mb-8">로그인</h2>
                         </div>
                         <div className="card flex-shrink-0 w-full max-w-lg shadow-2xl bg-base-100">
-                            <form className="card-body" onSubmit={handleSubmit}>
-                                <div className="form-control">
-                                    <label className="label cursor-pointer" htmlFor="email">
-                                        <span className="label-text">Email</span>
-                                    </label>
-                                    <input
-                                        type="email"
-                                        placeholder="email"
-                                        className="input input-bordered"
-                                        id="email"
-                                    />
-                                </div>
-                                <div className="form-control">
-                                    <label className="label cursor-pointer" htmlFor="password">
-                                        <span className="label-text">Password</span>
-                                    </label>
-                                    <input
-                                        type="password"
-                                        placeholder="password"
-                                        className="input input-bordered"
-                                        id="password"
-                                    />
-                                </div>
+                            <form className="card-body" onSubmit={handleSubmit(onValid)}>
+                                {inputList.map((input) => {
+                                    return (
+                                        <div key={input.id} className="form-control">
+                                            <label
+                                                className="label cursor-pointer"
+                                                htmlFor={input.id}
+                                            >
+                                                <span className="label-text">
+                                                    {input.labelText}
+                                                </span>
+                                            </label>
+                                            <input
+                                                className="input input-bordered"
+                                                id={input.id}
+                                                {...input.settings}
+                                                {...register(input.id, input.registerSettings)}
+                                            />
+                                            <p className="text-xs mt-2 ml-2 text-orange-500">
+                                                {String(errors[input.id]?.message || '')}
+                                            </p>
+                                        </div>
+                                    )
+                                })}
                                 <div className="form-control mt-6">
                                     <button type="submit" className="btn btn-primary">
                                         로그인
