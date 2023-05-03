@@ -5,29 +5,41 @@ import { isLoggedInSelector } from '../../store'
 const Menu = () => {
     const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInSelector)
 
-    const handleLogout = () => {
-        setIsLoggedIn(false)
-    }
+    const loggedInMenuList = [
+        {
+            url: '/post/write',
+            text: '글쓰기',
+        },
+        {
+            url: '/mypage',
+            text: '마이페이지',
+        },
+        {
+            url: '/',
+            text: '로그아웃',
+            onClick: () => {
+                setIsLoggedIn(false)
+            },
+        },
+    ]
 
     return (
         <>
             {isLoggedIn ? (
                 <>
-                    <li>
-                        <Link className="focus:bg-inherit" to="/post/write">
-                            글쓰기
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="focus:bg-inherit" to="/mypage">
-                            마이페이지
-                        </Link>
-                    </li>
-                    <li>
-                        <Link className="focus:bg-inherit" to="/" onClick={handleLogout}>
-                            로그아웃
-                        </Link>
-                    </li>
+                    {loggedInMenuList.map((menu) => {
+                        return (
+                            <li key={menu.text}>
+                                <Link
+                                    className="focus:bg-inherit"
+                                    to={menu.url}
+                                    onClick={menu.onClick}
+                                >
+                                    {menu.text}
+                                </Link>
+                            </li>
+                        )
+                    })}
                 </>
             ) : (
                 <>
