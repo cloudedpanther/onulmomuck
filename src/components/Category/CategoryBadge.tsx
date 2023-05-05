@@ -1,9 +1,6 @@
 import { useFormContext } from 'react-hook-form'
-
-export interface ICategory {
-    id: string
-    text: string
-}
+import { ICategory, defaultColorClass } from '../../store'
+import CategoryBadgeUI from './CategoryBadgeUI'
 
 interface ICategoryBadge {
     category: ICategory
@@ -17,16 +14,9 @@ const CategoryBadge = ({ category, colorClass }: ICategoryBadge) => {
         <label htmlFor={category.id} className="swap mr-4">
             <input type="checkbox" id={category.id} {...register(category.id)} />
 
-            <div
-                className="swap-off fill-current badge bg-gray-200 
-        border-gray-200 text-gray-600 text-xs font-bold p-3"
-            >
-                {category.text}
-            </div>
+            <CategoryBadgeUI className={`${defaultColorClass} swap-off`} text={category.text} />
 
-            <div className={`swap-on fill-current badge text-xs font-bold p-3 ${colorClass}`}>
-                {category.text}
-            </div>
+            <CategoryBadgeUI className={`${colorClass} swap-on`} text={category.text} />
         </label>
     )
 }

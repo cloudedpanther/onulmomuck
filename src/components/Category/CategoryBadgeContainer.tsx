@@ -1,4 +1,5 @@
-import CategoryBadge, { ICategory } from './CategoryBadge'
+import { ICategory } from '../../store'
+import CategoryBadge from './CategoryBadge'
 
 interface ICategoryBadgeContainer {
     categoryList: ICategory[]
