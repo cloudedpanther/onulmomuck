@@ -1,7 +1,12 @@
 import { FormProvider, useForm } from 'react-hook-form'
 import { CategorySelector } from '../Category'
+import PostList from '../PostList'
+import { useState, useEffect } from 'react'
+import { IPost, posts as totalPosts } from '../../fakeApi'
 
 const Home = () => {
+    const [posts, setPosts] = useState<IPost[]>([])
+
     const methods = useForm()
     const { register, handleSubmit } = methods
 
@@ -9,8 +14,12 @@ const Home = () => {
         console.log(data)
     }
 
+    useEffect(() => {
+        setPosts(totalPosts)
+    }, [])
+
     return (
-        <div className="mx-4 my-6">
+        <div className="px-4 py-6 max-w-6xl mx-auto">
             <form onSubmit={handleSubmit(onValid)}>
                 <FormProvider {...methods}>
                     <CategorySelector />
@@ -43,6 +52,8 @@ const Home = () => {
                     </div>
                 </div>
             </form>
+
+            <PostList posts={posts} />
         </div>
     )
 }
