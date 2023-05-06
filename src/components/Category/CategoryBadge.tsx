@@ -8,11 +8,21 @@ interface ICategoryBadge {
 }
 
 const CategoryBadge = ({ category, colorClass }: ICategoryBadge) => {
-    const { register } = useFormContext()
+    const { register, handleSubmit } = useFormContext()
+
+    const onValid = (data: any) => {
+        console.log(data)
+    }
 
     return (
         <label htmlFor={category.id} className="swap mr-4">
-            <input type="checkbox" id={category.id} {...register(category.id)} />
+            <input
+                type="checkbox"
+                id={category.id}
+                {...register(category.id, {
+                    onChange: handleSubmit(onValid),
+                })}
+            />
 
             <CategoryBadgeUI className={`${defaultColorClass} swap-off`} text={category.text} />
 
