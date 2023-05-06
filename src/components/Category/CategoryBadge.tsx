@@ -20,7 +20,7 @@ const CategoryBadge = ({ category, colorClass }: ICategoryBadge) => {
                 type="checkbox"
                 id={category.id}
                 {...register(category.id, {
-                    onChange: handleSubmit(onValid),
+                    onChange: () => handleSubmit(onValid)(),
                 })}
             />
 
