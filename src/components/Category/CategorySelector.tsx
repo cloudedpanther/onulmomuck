@@ -14,8 +14,10 @@ const CategorySelector = () => {
                         return (
                             <CategoryBadgeContainer
                                 key={groupName}
+                                groupName={groupName}
                                 categoryList={data}
                                 colorClass={colorClass}
+                                submit={true}
                             />
                         )
                     })

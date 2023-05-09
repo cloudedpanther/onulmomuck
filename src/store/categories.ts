@@ -11,7 +11,7 @@ export const categoriesState = atom({
     key: 'categories',
     default: [
         {
-            groupName: 'time',
+            groupName: '시간대',
             data: [
                 {
                     id: 'breakfast',
@@ -45,7 +45,7 @@ export const categoriesState = atom({
             colorClass: 'border-blue-300 bg-blue-300 text-blue-800',
         },
         {
-            groupName: 'foodType',
+            groupName: '음식 종류',
             data: [
                 {
                     id: 'korean',
@@ -66,6 +66,34 @@ export const categoriesState = atom({
                 {
                     id: 'asian',
                     text: '아시안',
+                },
+                {
+                    id: 'fastfood',
+                    text: '패스트푸드',
+                },
+                {
+                    id: 'dessert',
+                    text: '디저트',
+                },
+                {
+                    id: 'bunsik',
+                    text: '분식',
+                },
+                {
+                    id: 'noodles',
+                    text: '국수',
+                },
+                {
+                    id: 'meat',
+                    text: '고기/구이',
+                },
+                {
+                    id: 'lunchBox',
+                    text: '도시락',
+                },
+                {
+                    id: 'else',
+                    text: '기타',
                 },
             ],
             colorClass: 'border-orange-200 bg-orange-200 text-red-600',
