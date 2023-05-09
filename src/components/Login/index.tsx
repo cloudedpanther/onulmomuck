@@ -15,6 +15,7 @@ const inputList = [
         settings: {
             type: 'email',
             placeholder: 'email',
+            maxLength: 50,
         },
         registerSettings: {
             required: '이메일을 적어주세요',
@@ -34,6 +35,7 @@ const inputList = [
         settings: {
             type: 'password',
             placeholder: 'password',
+            maxLength: 16,
         },
         registerSettings: {
             required: '비밀번호를 적어주세요',
