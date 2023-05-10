@@ -1,4 +1,4 @@
-import { Link, Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useRecoilValue } from 'recoil'
 import { userState } from '../../store'
 
@@ -15,11 +15,8 @@ const Menu = () => {
             text: '마이페이지',
         },
         {
-            url: '/',
+            url: '/logout',
             text: '로그아웃',
-            onClick: () => {
-                return <Navigate to="/logout" />
-            },
         },
     ]
 
@@ -30,11 +27,7 @@ const Menu = () => {
                     {loggedInMenuList.map((menu) => {
                         return (
                             <li key={menu.text}>
-                                <Link
-                                    className="focus:bg-inherit"
-                                    to={menu.url}
-                                    onClick={menu.onClick}
-                                >
+                                <Link className="focus:bg-inherit" to={menu.url}>
                                     {menu.text}
                                 </Link>
                             </li>

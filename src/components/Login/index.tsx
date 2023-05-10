@@ -92,7 +92,7 @@ const Login = () => {
 
     return (
         <>
-            {user !== null ? (
+            {user === null ? (
                 <div
                     className="flex justify-center py-14 bg-base-200"
                     style={{ minHeight: 'calc(100vh - 4rem)' }}

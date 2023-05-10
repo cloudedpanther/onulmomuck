@@ -6,6 +6,7 @@ import Join from '../components/Join'
 import MyPage from '../components/Mypage'
 import ViewPost from '../components/ViewPost'
 import WritePost from '../components/WritePost'
+import Logout from '../components/Logout'
 
 const router = createBrowserRouter([
     {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
             {
                 path: 'join',
                 element: <Join />,
+            },
+            {
+                path: 'logout',
+                element: <Logout />,
             },
             {
                 path: 'mypage',

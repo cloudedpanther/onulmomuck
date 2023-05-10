@@ -13,7 +13,8 @@ const Root = () => {
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                setUser(user)
+                const userCopy = JSON.parse(JSON.stringify(user))
+                setUser(userCopy)
             }
             setInit(true)
         })
