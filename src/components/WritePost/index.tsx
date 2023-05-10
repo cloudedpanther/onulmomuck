@@ -1,6 +1,6 @@
 import { FormProvider, useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
-import { ICategory, categoriesState, isLoggedInState } from '../../store'
+import { ICategory, categoriesState, userState } from '../../store'
 import CategoryBadgeContainer from '../Category/CategoryBadgeContainer'
 import { Navigate } from 'react-router-dom'
 import { useState } from 'react'
@@ -8,7 +8,7 @@ import { useState } from 'react'
 const DEFAULT_THUMBNAIL = 'https://via.placeholder.com/448x320?text=Thumbnail'
 
 const WritePost = () => {
-    const isLoggedIn = useRecoilValue(isLoggedInState)
+    const user = useRecoilValue(userState)
 
     const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL)
 
@@ -48,9 +48,7 @@ const WritePost = () => {
 
     return (
         <div className="px-4 py-6 max-w-6xl mx-auto">
-            {!isLoggedIn ? (
-                <Navigate to="/" />
-            ) : (
+            {user !== null ? (
                 <form className="flex flex-col" onSubmit={handleSubmit(onValid)}>
                     <input
                         type="text"
@@ -140,6 +138,8 @@ const WritePost = () => {
                         </button>
                     </div>
                 </form>
+            ) : (
+                <Navigate to="/" />
             )}
         </div>
     )

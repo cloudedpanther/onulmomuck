@@ -1,4 +1,6 @@
 import { useForm } from 'react-hook-form'
+import { auth } from '../../../firebaseApp'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 
 const JoinFormKeys = {
     EMAIL: 'email',
@@ -109,13 +111,26 @@ const Join = () => {
         handleSubmit,
         formState: { errors },
         setError,
-    } = useForm<IJoinForm>()
+    } = useForm<IJoinForm>({ mode: 'onBlur' })
 
-    const onValid = (data: IJoinForm) => {
-        const { password, passwordConfig } = data
+    const onValid = async (data: IJoinForm) => {
+        const { email, userName, password, passwordConfig } = data
 
         if (password !== passwordConfig) {
-            setError('passwordConfig', { message: '비밀번호가 일치하지 않습니다.' })
+            setError(JoinFormKeys.PASSWORDCONFIG, { message: '비밀번호가 일치하지 않습니다.' })
+            return
+        }
+
+        try {
+            await createUserWithEmailAndPassword(auth, email, password)
+
+            if (auth.currentUser) {
+                await updateProfile(auth.currentUser, {
+                    displayName: userName,
+                })
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
 

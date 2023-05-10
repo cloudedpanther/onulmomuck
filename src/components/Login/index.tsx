@@ -1,12 +1,19 @@
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useRecoilState } from 'recoil'
-import { isLoggedInSelector } from '../../store'
+import { userState } from '../../store'
 import { useForm } from 'react-hook-form'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../../../firebaseApp'
 
 const LoginFormKeys = {
     EMAIL: 'email',
     PASSWORD: 'password',
 } as const
+
+interface ILoginForm {
+    email: string
+    password: string
+}
 
 const inputList = [
     {
@@ -57,23 +64,35 @@ const inputList = [
 ]
 
 const Login = () => {
-    const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInSelector)
+    const [user, setUser] = useRecoilState(userState)
+
+    const navigate = useNavigate()
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm()
+    } = useForm<ILoginForm>()
 
-    const onValid = () => {
-        setIsLoggedIn(true)
+    const onValid = async (data: ILoginForm) => {
+        const { email, password } = data
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password)
+
+            if (auth.currentUser) {
+                setUser(auth.currentUser)
+            }
+
+            navigate('/')
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
         <>
-            {isLoggedIn ? (
-                <Navigate to="/" />
-            ) : (
+            {user !== null ? (
                 <div
                     className="flex justify-center py-14 bg-base-200"
                     style={{ minHeight: 'calc(100vh - 4rem)' }}
@@ -121,6 +140,8 @@ const Login = () => {
                         </div>
                     </div>
                 </div>
+            ) : (
+                <Navigate to="/" />
             )}
         </>
     )

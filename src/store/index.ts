@@ -1,5 +1,5 @@
-import { isLoggedInState, isLoggedInSelector } from './isLoggedIn'
+import { userState } from './user'
 import { categoriesState, defaultColorClass, ICategory } from './categories'
 
-export { isLoggedInState, isLoggedInSelector, categoriesState, defaultColorClass }
+export { userState, categoriesState, defaultColorClass }
 export type { ICategory }

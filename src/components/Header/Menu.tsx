@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom'
-import { useRecoilState } from 'recoil'
-import { isLoggedInSelector } from '../../store'
+import { Link, Navigate } from 'react-router-dom'
+import { useRecoilValue } from 'recoil'
+import { userState } from '../../store'
 
 const Menu = () => {
-    const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedInSelector)
+    const user = useRecoilValue(userState)
 
     const loggedInMenuList = [
         {
@@ -18,14 +18,14 @@ const Menu = () => {
             url: '/',
             text: '로그아웃',
             onClick: () => {
-                setIsLoggedIn(false)
+                return <Navigate to="/logout" />
             },
         },
     ]
 
     return (
         <>
-            {isLoggedIn ? (
+            {user !== null ? (
                 <>
                     {loggedInMenuList.map((menu) => {
                         return (
