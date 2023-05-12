@@ -4,7 +4,7 @@ import Header from '../Header'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../../../firebaseApp'
 import { useSetRecoilState } from 'recoil'
-import { userState } from '../../store'
+import { parseUser, userState } from '../../store'
 
 const Root = () => {
     const [init, setInit] = useState(false)
@@ -13,7 +13,7 @@ const Root = () => {
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                const userCopy = JSON.parse(JSON.stringify(user))
+                const userCopy = parseUser(user)
                 setUser(userCopy)
             }
             setInit(true)

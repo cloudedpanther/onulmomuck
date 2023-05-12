@@ -14,11 +14,10 @@ const Logout = () => {
             try {
                 await signOut(auth)
                 setUser(null)
+                navigate('/')
             } catch (error) {
                 console.log(error)
             }
-
-            navigate('/')
         }
 
         logout()

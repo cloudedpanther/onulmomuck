@@ -1,5 +1,5 @@
-import { userState } from './user'
+import { parseUser, userState } from './user'
 import { categoriesState, defaultColorClass, ICategory } from './categories'
 
-export { userState, categoriesState, defaultColorClass }
+export { parseUser, userState, categoriesState, defaultColorClass }
 export type { ICategory }

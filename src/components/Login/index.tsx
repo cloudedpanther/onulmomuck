@@ -1,6 +1,6 @@
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useRecoilState } from 'recoil'
-import { userState } from '../../store'
+import { parseUser, userState } from '../../store'
 import { useForm } from 'react-hook-form'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../../firebaseApp'
@@ -78,10 +78,11 @@ const Login = () => {
         const { email, password } = data
 
         try {
-            await signInWithEmailAndPassword(auth, email, password)
+            const result = await signInWithEmailAndPassword(auth, email, password)
 
-            if (auth.currentUser) {
-                setUser(auth.currentUser)
+            if (result) {
+                const user = parseUser(result.user)
+                setUser(user)
             }
 
             navigate('/')
