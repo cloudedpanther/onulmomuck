@@ -2,7 +2,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useRecoilState } from 'recoil'
 import { parseUser, userState } from '../../store'
 import { useForm } from 'react-hook-form'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
 import { auth } from '../../../firebaseApp'
 
 const LoginFormKeys = {
@@ -91,6 +91,21 @@ const Login = () => {
         }
     }
 
+    const handleGoogleLogin = async () => {
+        try {
+            const provider = new GoogleAuthProvider()
+
+            const result = await signInWithPopup(auth, provider)
+
+            const user = parseUser(result.user)
+            setUser(user)
+
+            navigate('/')
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <>
             {user === null ? (
@@ -103,7 +118,7 @@ const Login = () => {
                             <h2 className="text-4xl font-bold mb-8">로그인</h2>
                         </div>
                         <div className="card flex-shrink-0 w-full max-w-lg shadow-2xl bg-base-100">
-                            <form className="card-body" onSubmit={handleSubmit(onValid)}>
+                            <form className="card-body pb-0" onSubmit={handleSubmit(onValid)}>
                                 {inputList.map((input) => {
                                     return (
                                         <div key={input.id} className="form-control">
@@ -138,6 +153,18 @@ const Login = () => {
                                     </Link>
                                 </div>
                             </form>
+                            <div className="mt-4 mb-6 flex justify-center">
+                                <button
+                                    className="w-12 h-12 p-2 shadow shadow-slate-400 rounded-full mx-auto"
+                                    onClick={handleGoogleLogin}
+                                >
+                                    <img
+                                        src="/google-icon.png"
+                                        alt="구글로 시작하기"
+                                        className="w-max h-max"
+                                    />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

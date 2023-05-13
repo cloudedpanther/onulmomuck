@@ -1,4 +1,4 @@
-import Comment from './comment'
+import Comment from './Comment'
 import FilledHeart from './FilledHeart'
 import OutlineHeart from './OutlineHeart'
 
