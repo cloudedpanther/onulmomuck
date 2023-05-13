@@ -1,27 +1,22 @@
-import { ICategory } from '../../store'
+import { ITag } from '../../store'
 import CategoryBadge from './CategoryBadge'
 
 interface ICategoryBadgeContainer {
-    groupName: string
-    categoryList: ICategory[]
+    name: string
+    tags: ITag[]
     colorClass: string
     submit: boolean
 }
 
-const CategoryBadgeContainer = ({
-    groupName,
-    categoryList,
-    colorClass,
-    submit,
-}: ICategoryBadgeContainer) => {
+const CategoryBadgeContainer = ({ name, tags, colorClass, submit }: ICategoryBadgeContainer) => {
     return (
         <div className="py-3 flex flex-wrap gap-3 items-center mx-4">
-            {categoryList.map((category) => {
+            {tags?.map((tag) => {
                 return (
                     <CategoryBadge
-                        key={category.id}
-                        groupName={groupName}
-                        category={category}
+                        key={tag.id}
+                        name={name}
+                        tag={tag}
                         colorClass={colorClass}
                         submit={submit}
                     />

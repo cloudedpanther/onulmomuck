@@ -1,6 +1,6 @@
 import { FormProvider, useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
-import { ICategory, categoriesState, userState } from '../../store'
+import { ITag, categoriesState, userState } from '../../store'
 import CategoryBadgeContainer from '../Category/CategoryBadgeContainer'
 import { Navigate } from 'react-router-dom'
 import { useState } from 'react'
@@ -8,11 +8,11 @@ import { useState } from 'react'
 const DEFAULT_THUMBNAIL = 'https://via.placeholder.com/448x320?text=Thumbnail'
 
 const WritePost = () => {
+    const categories = useRecoilValue(categoriesState)
+
     const user = useRecoilValue(userState)
 
     const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL)
-
-    const categoryGroupList = useRecoilValue(categoriesState)
 
     const methods = useForm()
     const {
@@ -30,17 +30,16 @@ const WritePost = () => {
     }
 
     const onValid = (data: any) => {
-        console.log(data)
+        categories?.forEach(({ name, tags }) => {
+            const trues = tags
+                ?.map(({ id }: ITag) => data[id])
+                .filter((value: boolean) => value === true)
 
-        categoryGroupList.forEach(({ groupName, data: categories }) => {
-            const selected =
-                categories
-                    .map(({ id }: ICategory) => data[id])
-                    .filter((value: boolean) => value === true).length > 0
+            const selected = trues && trues.length > 0
 
             if (!selected) {
-                setError(groupName, {
-                    message: `${groupName} 중에서 하나 이상의 카테고리를 선택해주셔야 합니다.`,
+                setError(name, {
+                    message: `${name} 중에서 하나 이상의 카테고리를 선택해주셔야 합니다.`,
                 })
             }
         })
@@ -105,18 +104,18 @@ const WritePost = () => {
 
                     <FormProvider {...methods}>
                         <div className="border-solid border border-amber-500 rounded-md mt-4">
-                            {categoryGroupList
-                                .map<React.ReactNode>(({ groupName, data, colorClass }) => {
+                            {categories
+                                ?.map<React.ReactNode>(({ name, tags, colorClass }) => {
                                     return (
-                                        <div key={groupName}>
+                                        <div key={name}>
                                             <CategoryBadgeContainer
-                                                groupName={groupName}
-                                                categoryList={data}
+                                                name={name}
+                                                tags={tags}
                                                 colorClass={colorClass}
                                                 submit={false}
                                             />
                                             <p className="text-xs mb-2 ml-4 text-orange-500">
-                                                {String(errors[groupName]?.message || '')}
+                                                {String(errors[name]?.message || '')}
                                             </p>
                                         </div>
                                     )

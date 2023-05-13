@@ -2,22 +2,31 @@ import { useState, useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import Header from '../Header'
 import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from '../../../firebaseApp'
+import { auth, getCategories } from '../../../firebaseApp'
 import { useSetRecoilState } from 'recoil'
-import { parseUser, userState } from '../../store'
+import { categoriesState, parseUser, userState } from '../../store'
 
 const Root = () => {
     const [init, setInit] = useState(false)
     const setUser = useSetRecoilState(userState)
+    const setCategories = useSetRecoilState(categoriesState)
 
     useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const userCopy = parseUser(user)
-                setUser(userCopy)
-            }
+        const initialize = async () => {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const userCopy = parseUser(user)
+                    setUser(userCopy)
+                }
+            })
+
+            const categories = await getCategories()
+            setCategories(categories)
+
             setInit(true)
-        })
+        }
+
+        initialize()
     }, [])
 
     return (

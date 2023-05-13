@@ -3,6 +3,7 @@ import { CategorySelector } from '../Category'
 import PostList from '../PostList'
 import { useState, useEffect } from 'react'
 import { IPost, posts as totalPosts } from '../../fakeApi'
+import { getCategories } from '../../../firebaseApp'
 
 const Home = () => {
     const [posts, setPosts] = useState<IPost[]>([])
@@ -16,6 +17,11 @@ const Home = () => {
 
     useEffect(() => {
         setPosts(totalPosts)
+
+        const printCategories = async () => {
+            await getCategories()
+        }
+        printCategories()
     }, [])
 
     return (

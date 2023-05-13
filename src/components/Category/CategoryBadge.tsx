@@ -1,15 +1,15 @@
 import { useFormContext } from 'react-hook-form'
-import { ICategory, defaultColorClass } from '../../store'
+import { ITag, defaultColorClass } from '../../store'
 import CategoryBadgeUI from './CategoryBadgeUI'
 
 interface ICategoryBadge {
-    groupName: string
-    category: ICategory
+    name: string
+    tag: ITag
     colorClass: string
     submit: boolean
 }
 
-const CategoryBadge = ({ groupName, category, colorClass, submit }: ICategoryBadge) => {
+const CategoryBadge = ({ name, tag, colorClass, submit }: ICategoryBadge) => {
     const { register, handleSubmit, clearErrors } = useFormContext()
 
     const onValid = (data: any) => {
@@ -23,17 +23,17 @@ const CategoryBadge = ({ groupName, category, colorClass, submit }: ICategoryBad
                 return
             }
 
-            clearErrors(groupName)
+            clearErrors(name)
         },
     }
 
     return (
-        <label htmlFor={category.id} className="swap">
-            <input type="checkbox" id={category.id} {...register(category.id, registerSettings)} />
+        <label htmlFor={tag.id} className="swap">
+            <input type="checkbox" id={tag.id} {...register(tag.id, registerSettings)} />
 
-            <CategoryBadgeUI className={`${defaultColorClass} swap-off`} text={category.text} />
+            <CategoryBadgeUI className={`${defaultColorClass} swap-off`} text={tag.text} />
 
-            <CategoryBadgeUI className={`${colorClass} swap-on`} text={category.text} />
+            <CategoryBadgeUI className={`${colorClass} swap-on`} text={tag.text} />
         </label>
     )
 }
