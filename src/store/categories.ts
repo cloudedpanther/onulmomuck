@@ -1,4 +1,4 @@
-import { atom } from 'recoil'
+import { atom, useRecoilValue } from 'recoil'
 
 export interface ICategory {
     id: string
@@ -18,3 +18,13 @@ export const categoriesState = atom<ICategory[]>({
     key: 'categories',
     default: [],
 })
+
+export const getTagTypes = () => {
+    const categories = useRecoilValue(categoriesState)
+
+    return categories
+        .map((category) => {
+            return category.tags.map((tag) => tag.id)
+        })
+        .flat()
+}

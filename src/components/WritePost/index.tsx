@@ -4,6 +4,21 @@ import { ITag, categoriesState, userState } from '../../store'
 import CategoryBadgeContainer from '../Category/CategoryBadgeContainer'
 import { Navigate } from 'react-router-dom'
 import { useState } from 'react'
+import { db, storage } from '../../../firebaseApp'
+import { getDownloadURL, ref, uploadString } from 'firebase/storage'
+import { collection, doc, setDoc } from 'firebase/firestore'
+
+interface IThumbnail {
+    url: string
+    type: string | undefined
+}
+
+type IPostForm = {
+    [key: string]: string | boolean | Blob[]
+    title: string
+    thumbnail: Blob[]
+    text: string
+}
 
 const DEFAULT_THUMBNAIL = 'https://via.placeholder.com/448x320?text=Thumbnail'
 
@@ -12,9 +27,12 @@ const WritePost = () => {
 
     const user = useRecoilValue(userState)
 
-    const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL)
+    const [thumbnail, setThumbnail] = useState<IThumbnail>({
+        url: DEFAULT_THUMBNAIL,
+        type: undefined,
+    })
 
-    const methods = useForm()
+    const methods = useForm<IPostForm>()
     const {
         register,
         handleSubmit,
@@ -24,16 +42,25 @@ const WritePost = () => {
     } = methods
 
     const handleThumbnailChange = () => {
-        const thumbnail = watch('thumbnail')[0]
-        const url = URL.createObjectURL(thumbnail)
-        setThumbnail(url)
+        const imgFile = watch('thumbnail')[0]
+        const reader = new FileReader()
+        reader.onloadend = (e: ProgressEvent<FileReader>) => {
+            const url = String(e.target?.result)
+            if (url) {
+                setThumbnail({
+                    url,
+                    type: imgFile.type,
+                })
+            }
+        }
+        reader.readAsDataURL(imgFile)
     }
 
-    const onValid = (data: any) => {
-        categories?.forEach(({ name, tags }) => {
-            const trues = tags
-                ?.map(({ id }: ITag) => data[id])
-                .filter((value: boolean) => value === true)
+    const onValid = async (data: IPostForm) => {
+        if (!categories || !user) return
+
+        for (const { name, tags } of categories) {
+            const trues = tags?.map(({ id }: ITag) => data[id]).filter((value) => value === true)
 
             const selected = trues && trues.length > 0
 
@@ -41,8 +68,42 @@ const WritePost = () => {
                 setError(name, {
                     message: `${name} 중에서 하나 이상의 카테고리를 선택해주셔야 합니다.`,
                 })
+
+                return
             }
+        }
+
+        const metaData = {
+            contentType: thumbnail.type,
+        }
+
+        const thumbnailRef = ref(storage, `${user.uid}${Date.now()}`)
+
+        const response = await uploadString(thumbnailRef, thumbnail.url, 'data_url', metaData)
+
+        const attachmentUrl = await getDownloadURL(response.ref)
+
+        const tags = Object.keys(data).filter((key) => {
+            if (key === 'title' || key === 'text' || key === 'thumbnail') return false
+
+            return data[key]
         })
+
+        const newPost = {
+            createdAt: Date.now(),
+            createrUid: user.uid,
+            title: data.title,
+            text: data.text,
+            thumbnailUrl: attachmentUrl,
+            tags,
+            totalComments: 0,
+            likeUids: [],
+        }
+
+        const postRef = collection(db, 'post')
+        const docRef = doc(postRef)
+
+        await setDoc(docRef, newPost)
     }
 
     return (
@@ -69,7 +130,7 @@ const WritePost = () => {
                     <div className="mt-4 flex md:items-end flex-col md:flex-row">
                         <img
                             className="max-w-md max-h-80 rounded object-contain object-left-top"
-                            src={thumbnail}
+                            src={thumbnail.url}
                         />
                         <input
                             type="file"
