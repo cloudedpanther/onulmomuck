@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom'
 import { Comment, FilledHeart } from '../Icons'
-import { IPost } from '../../fakeApi'
+import { IPost } from '../../../firebaseApp'
 
 interface IPostCard {
     postData: IPost
 }
 
 const PostCard = ({ postData }: IPostCard) => {
-    const { id, imgUrl, title, totalComments, likes } = postData
+    const { id, thumbnailUrl, title, totalComments, totalLikes } = postData
 
     return (
         <article>
@@ -15,7 +15,7 @@ const PostCard = ({ postData }: IPostCard) => {
                 <div className="card bg-base-100 shadow-xl h-72 cursor-pointer">
                     <figure
                         className="h-3/5 bg-cover bg-center"
-                        style={{ backgroundImage: `url('${imgUrl}')` }}
+                        style={{ backgroundImage: `url('${thumbnailUrl}')` }}
                     ></figure>
                     <div className="card-body p-4 h-2/5">
                         <p className="font-bold truncate">{title}</p>
@@ -28,7 +28,9 @@ const PostCard = ({ postData }: IPostCard) => {
                             </div>
                             <div className="flex items-center">
                                 <FilledHeart className="w-5 h-5 mr-2" />
-                                <p className="grow-0 text-sm font-bold w-8 truncate">{likes}</p>
+                                <p className="grow-0 text-sm font-bold w-8 truncate">
+                                    {totalLikes}
+                                </p>
                             </div>
                         </div>
                     </div>

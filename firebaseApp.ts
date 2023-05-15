@@ -57,3 +57,39 @@ export const getCategories = async () => {
 
     return categories
 }
+
+export interface IPost {
+    id: string
+    title: string
+    text?: string
+    thumbnailUrl: string
+    createdAt?: string
+    createrUid?: string
+    tags?: string[]
+    totalComments: number
+    totalLikes: number
+}
+
+export const getPosts = async (keyword?: string, tags?: string[]) => {
+    let posts: IPost[] = []
+
+    const postRef = collection(db, 'post')
+    const q = query(postRef, orderBy('createdAt'))
+    const postSnap = await getDocs(q)
+
+    postSnap.forEach((docs) => {
+        const { title, thumbnailUrl, totalComments, likeUids } = docs.data()
+
+        const newPost = {
+            id: docs.id,
+            title,
+            thumbnailUrl,
+            totalComments,
+            totalLikes: likeUids.length,
+        }
+
+        posts = [newPost, ...posts]
+    })
+
+    return posts
+}

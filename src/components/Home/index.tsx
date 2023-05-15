@@ -2,26 +2,31 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { CategorySelector } from '../Category'
 import PostList from '../PostList'
 import { useState, useEffect } from 'react'
-import { IPost, posts as totalPosts } from '../../fakeApi'
-import { getCategories } from '../../../firebaseApp'
+import { IPost, getCategories, getPosts } from '../../../firebaseApp'
+
+interface ISearchForm {
+    [key: string]: boolean | string
+    search: string
+}
 
 const Home = () => {
     const [posts, setPosts] = useState<IPost[]>([])
 
-    const methods = useForm()
+    const methods = useForm<ISearchForm>()
     const { register, handleSubmit } = methods
 
-    const onValid = (data: any) => {
-        console.log(data)
+    const onValid = (data: ISearchForm) => {
+        const { search } = data
     }
 
     useEffect(() => {
-        setPosts(totalPosts)
-
-        const printCategories = async () => {
+        const initHome = async () => {
             await getCategories()
+
+            const fetchedPosts = await getPosts()
+            setPosts(fetchedPosts)
         }
-        printCategories()
+        initHome()
     }, [])
 
     return (

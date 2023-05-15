@@ -1,4 +1,4 @@
-import { IPost } from '../../fakeApi'
+import { IPost } from '../../../firebaseApp'
 import PostCard from '../PostCard'
 
 interface IPostList {
