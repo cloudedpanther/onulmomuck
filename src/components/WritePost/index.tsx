@@ -2,7 +2,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 import { ITag, categoriesState, userState } from '../../store'
 import CategoryBadgeContainer from '../Category/CategoryBadgeContainer'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { db, storage } from '../../../firebaseApp'
 import { getDownloadURL, ref, uploadString } from 'firebase/storage'
@@ -22,6 +22,9 @@ type IPostForm = {
 
 const DEFAULT_THUMBNAIL = 'https://via.placeholder.com/448x320?text=Thumbnail'
 
+const DEFAULT_BTN_CLASS = 'btn btn-primary'
+const DISABLED_BTN_CLASS = 'btn btn-primary btn-disabled'
+
 const WritePost = () => {
     const categories = useRecoilValue(categoriesState)
 
@@ -32,6 +35,8 @@ const WritePost = () => {
         type: undefined,
     })
 
+    const [btnClass, setBtnClass] = useState(DEFAULT_BTN_CLASS)
+
     const methods = useForm<IPostForm>()
     const {
         register,
@@ -40,6 +45,8 @@ const WritePost = () => {
         formState: { errors },
         setError,
     } = methods
+
+    const navigate = useNavigate()
 
     const handleThumbnailChange = () => {
         const imgFile = watch('thumbnail')[0]
@@ -59,51 +66,62 @@ const WritePost = () => {
     const onValid = async (data: IPostForm) => {
         if (!categories || !user) return
 
-        for (const { name, tags } of categories) {
-            const trues = tags?.map(({ id }: ITag) => data[id]).filter((value) => value === true)
+        try {
+            for (const { name, tags } of categories) {
+                const trues = tags
+                    ?.map(({ id }: ITag) => data[id])
+                    .filter((value) => value === true)
 
-            const selected = trues && trues.length > 0
+                const selected = trues && trues.length > 0
 
-            if (!selected) {
-                setError(name, {
-                    message: `${name} 중에서 하나 이상의 카테고리를 선택해주셔야 합니다.`,
-                })
+                if (!selected) {
+                    setError(name, {
+                        message: `${name} 중에서 하나 이상의 카테고리를 선택해주셔야 합니다.`,
+                    })
 
-                return
+                    return
+                }
             }
+
+            setBtnClass(DISABLED_BTN_CLASS)
+
+            const metaData = {
+                contentType: thumbnail.type,
+            }
+
+            const thumbnailRef = ref(storage, `${user.uid}${Date.now()}`)
+
+            const response = await uploadString(thumbnailRef, thumbnail.url, 'data_url', metaData)
+
+            const attachmentUrl = await getDownloadURL(response.ref)
+
+            const tags = Object.keys(data).filter((key) => {
+                if (key === 'title' || key === 'text' || key === 'thumbnail') return false
+
+                return data[key]
+            })
+
+            const newPost = {
+                createdAt: Date.now(),
+                createrUid: user.uid,
+                title: data.title,
+                text: data.text,
+                thumbnailUrl: attachmentUrl,
+                tags,
+                totalComments: 0,
+                likeUids: [],
+            }
+
+            const postRef = collection(db, 'post')
+            const docRef = doc(postRef)
+
+            await setDoc(docRef, newPost)
+
+            navigate('/')
+        } catch (error) {
+            console.log(error)
+            setBtnClass(DEFAULT_BTN_CLASS)
         }
-
-        const metaData = {
-            contentType: thumbnail.type,
-        }
-
-        const thumbnailRef = ref(storage, `${user.uid}${Date.now()}`)
-
-        const response = await uploadString(thumbnailRef, thumbnail.url, 'data_url', metaData)
-
-        const attachmentUrl = await getDownloadURL(response.ref)
-
-        const tags = Object.keys(data).filter((key) => {
-            if (key === 'title' || key === 'text' || key === 'thumbnail') return false
-
-            return data[key]
-        })
-
-        const newPost = {
-            createdAt: Date.now(),
-            createrUid: user.uid,
-            title: data.title,
-            text: data.text,
-            thumbnailUrl: attachmentUrl,
-            tags,
-            totalComments: 0,
-            likeUids: [],
-        }
-
-        const postRef = collection(db, 'post')
-        const docRef = doc(postRef)
-
-        await setDoc(docRef, newPost)
     }
 
     return (
@@ -149,7 +167,7 @@ const WritePost = () => {
                     <textarea
                         className="textarea textarea-warning border-amber-500 mt-4 resize-none"
                         placeholder="내용을 입력해주세요"
-                        maxLength={30}
+                        maxLength={1000}
                         rows={10}
                         {...register('text', {
                             required: '본문을 반드시 작성하셔야 합니다.',
@@ -193,7 +211,7 @@ const WritePost = () => {
                     </FormProvider>
 
                     <div className="mt-4 flex justify-end">
-                        <button type="submit" className="btn btn-primary">
+                        <button type="submit" className={btnClass}>
                             저장
                         </button>
                     </div>
