@@ -3,9 +3,12 @@ import PostCard from '../PostCard'
 
 interface IPostList {
     posts: IPost[]
+    page: number
+    onPrev: () => void
+    onNext: () => Promise<void>
 }
 
-const PostList = ({ posts }: IPostList) => {
+const PostList = ({ posts, page, onPrev, onNext }: IPostList) => {
     return (
         <section>
             {posts.length === 0 ? (
@@ -21,9 +24,13 @@ const PostList = ({ posts }: IPostList) => {
                     </div>
 
                     <div className="btn-group mt-4 w-full flex justify-center">
-                        <button className="btn">«</button>
-                        <button className="btn pointer-events-none">Page 1</button>
-                        <button className="btn">»</button>
+                        <button className="btn" onClick={onPrev}>
+                            «
+                        </button>
+                        <button className="btn pointer-events-none">Page {page}</button>
+                        <button className="btn" onClick={onNext}>
+                            »
+                        </button>
                     </div>
                 </>
             )}

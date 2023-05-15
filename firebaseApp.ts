@@ -1,6 +1,14 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { collection, getDocs, getFirestore, orderBy, query } from 'firebase/firestore'
+import {
+    collection,
+    getDocs,
+    getFirestore,
+    limit,
+    orderBy,
+    query,
+    startAfter,
+} from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 import { ICategory, ITag } from './src/store'
 
@@ -70,26 +78,66 @@ export interface IPost {
     totalLikes: number
 }
 
-export const getPosts = async (keyword?: string, tags?: string[]) => {
+interface IGetPosts {
+    keyword?: string
+    selectedTags?: string[]
+    lastVisible?: number
+}
+
+export const getPosts = async (
+    pageSize: number,
+    { keyword, selectedTags, lastVisible }: IGetPosts
+) => {
     let posts: IPost[] = []
 
+    const searchKey = keyword ? keyword.trim() : ''
+
     const postRef = collection(db, 'post')
-    const q = query(postRef, orderBy('createdAt'))
-    const postSnap = await getDocs(q)
 
-    postSnap.forEach((docs) => {
-        const { title, thumbnailUrl, totalComments, likeUids } = docs.data()
+    let lastCheckIndex = lastVisible || Infinity
 
-        const newPost = {
-            id: docs.id,
-            title,
-            thumbnailUrl,
-            totalComments,
-            totalLikes: likeUids.length,
-        }
+    while (posts.length < pageSize) {
+        const q = query(
+            postRef,
+            orderBy('createdAt', 'desc'),
+            startAfter(lastCheckIndex),
+            limit(pageSize)
+        )
 
-        posts = [newPost, ...posts]
-    })
+        const postSnap = await getDocs(q)
 
-    return posts
+        if (postSnap.docs.length === 0) break
+
+        postSnap.forEach((docs) => {
+            const { createdAt, title, thumbnailUrl, totalComments, likeUids, tags } = docs.data()
+
+            if (posts.length === pageSize) return
+
+            lastCheckIndex = Number(createdAt)
+
+            if (selectedTags) {
+                const unMatchedTags = [...selectedTags].filter((tag) => !tags.includes(tag))
+                const unSelected = unMatchedTags.length > 0
+
+                if (unSelected) return
+            }
+
+            if (keyword) {
+                if (!title.includes(searchKey)) return
+            }
+
+            const newPost = {
+                createdAt,
+                id: docs.id,
+                title,
+                thumbnailUrl,
+                totalComments,
+                totalLikes: likeUids.length,
+            }
+
+            posts = [...posts, newPost]
+        })
+    }
+
+    return { posts, lastCheckIndex }
 }

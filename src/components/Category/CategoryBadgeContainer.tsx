@@ -1,14 +1,15 @@
 import { ITag } from '../../store'
+import { ISearchForm } from '../Home'
 import CategoryBadge from './CategoryBadge'
 
 interface ICategoryBadgeContainer {
     name: string
     tags: ITag[]
     colorClass: string
-    submit: boolean
+    onSubmit?: (data: ISearchForm) => Promise<void>
 }
 
-const CategoryBadgeContainer = ({ name, tags, colorClass, submit }: ICategoryBadgeContainer) => {
+const CategoryBadgeContainer = ({ name, tags, colorClass, onSubmit }: ICategoryBadgeContainer) => {
     return (
         <div className="py-3 flex flex-wrap gap-3 items-center mx-4">
             {tags?.map((tag) => {
@@ -18,7 +19,7 @@ const CategoryBadgeContainer = ({ name, tags, colorClass, submit }: ICategoryBad
                         name={name}
                         tag={tag}
                         colorClass={colorClass}
-                        submit={submit}
+                        onSubmit={onSubmit}
                     />
                 )
             })}

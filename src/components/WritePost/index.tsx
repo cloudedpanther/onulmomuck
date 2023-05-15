@@ -191,7 +191,6 @@ const WritePost = () => {
                                                 name={name}
                                                 tags={tags}
                                                 colorClass={colorClass}
-                                                submit={false}
                                             />
                                             <p className="text-xs mb-2 ml-4 text-orange-500">
                                                 {String(errors[name]?.message || '')}

@@ -4,27 +4,93 @@ import PostList from '../PostList'
 import { useState, useEffect } from 'react'
 import { IPost, getCategories, getPosts } from '../../../firebaseApp'
 
-interface ISearchForm {
+export interface ISearchForm {
     [key: string]: boolean | string
     search: string
 }
 
+const PAGE_SIZE = 8
+
 const Home = () => {
     const [posts, setPosts] = useState<IPost[]>([])
+    const [accPosts, setAccPosts] = useState<IPost[]>([])
+    const [page, setPage] = useState(0)
+    const [lastVisible, setLastVisible] = useState<number>(Infinity)
+    const [accLastVisible, setAccLastVisible] = useState<number[]>([])
+    const [keyword, setKeyword] = useState<string>('')
+    const [selectedTags, setSelectedTags] = useState<string[]>([])
+    const [isLastPage, setIsLastPage] = useState(false)
 
     const methods = useForm<ISearchForm>()
     const { register, handleSubmit } = methods
 
-    const onValid = (data: ISearchForm) => {
+    const initStates = (fetchedPosts: IPost[], lastCheckIndex: number) => {
+        setPosts(fetchedPosts)
+        setAccPosts([])
+        setLastVisible(lastCheckIndex)
+        setAccLastVisible([])
+        setPage(1)
+        setIsLastPage(false)
+    }
+
+    const onValid = async (data: ISearchForm) => {
         const { search } = data
+        const tags = Object.keys(data).filter((key) => {
+            if (key === 'search') return false
+            if (!data[key]) return false
+            return true
+        })
+
+        setKeyword(search)
+        setSelectedTags(tags)
+
+        const { posts: fetchedPosts, lastCheckIndex } = await getPosts(PAGE_SIZE, {
+            keyword: search,
+            selectedTags: tags,
+        })
+        initStates(fetchedPosts, lastCheckIndex)
+    }
+
+    const handleNextPage = async () => {
+        if (isLastPage) return
+
+        const { posts: fetchedPosts, lastCheckIndex } = await getPosts(PAGE_SIZE, {
+            keyword,
+            selectedTags,
+            lastVisible,
+        })
+
+        if (fetchedPosts.length === 0) {
+            setIsLastPage(true)
+            return
+        }
+
+        setAccPosts((prev) => [...prev, ...posts])
+        setPosts(fetchedPosts)
+        setAccLastVisible((prev) => [...prev, lastVisible])
+        setLastVisible(lastCheckIndex)
+        setPage((prev) => prev + 1)
+    }
+
+    const handlePrevPage = () => {
+        if (accPosts.length === 0) return
+
+        const prevPagePosts = accPosts.slice(-1 * PAGE_SIZE)
+        setPosts(prevPagePosts)
+        setAccPosts((prev) => prev.slice(0, -1 * PAGE_SIZE))
+        setPage((prev) => prev - 1)
+        const prevLastVisible = accLastVisible.slice(-1)[0]
+        setLastVisible(prevLastVisible)
+        setAccLastVisible((prev) => prev.slice(0, -1))
+        setIsLastPage(false)
     }
 
     useEffect(() => {
         const initHome = async () => {
             await getCategories()
 
-            const fetchedPosts = await getPosts()
-            setPosts(fetchedPosts)
+            const { posts: fetchedPosts, lastCheckIndex } = await getPosts(PAGE_SIZE, {})
+            initStates(fetchedPosts, lastCheckIndex)
         }
         initHome()
     }, [])
@@ -33,7 +99,7 @@ const Home = () => {
         <div className="px-4 py-6 max-w-6xl mx-auto">
             <form onSubmit={handleSubmit(onValid)}>
                 <FormProvider {...methods}>
-                    <CategorySelector />
+                    <CategorySelector onSubmit={onValid} />
                 </FormProvider>
 
                 <div className="form-control mt-4">
@@ -64,7 +130,7 @@ const Home = () => {
                 </div>
             </form>
 
-            <PostList posts={posts} />
+            <PostList posts={posts} page={page} onPrev={handlePrevPage} onNext={handleNextPage} />
         </div>
     )
 }

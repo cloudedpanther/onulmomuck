@@ -1,8 +1,13 @@
 import { useRecoilValue } from 'recoil'
 import { categoriesState } from '../../store'
 import CategoryBadgeContainer from './CategoryBadgeContainer'
+import { ISearchForm } from '../Home'
 
-const CategorySelector = () => {
+interface ICategorySelector {
+    onSubmit: (data: ISearchForm) => Promise<void>
+}
+
+const CategorySelector = ({ onSubmit }: ICategorySelector) => {
     const categories = useRecoilValue(categoriesState)
 
     return (
@@ -17,7 +22,7 @@ const CategorySelector = () => {
                                 name={name}
                                 tags={tags}
                                 colorClass={colorClass}
-                                submit={true}
+                                onSubmit={onSubmit}
                             />
                         )
                     })

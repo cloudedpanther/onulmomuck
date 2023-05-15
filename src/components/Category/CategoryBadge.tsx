@@ -1,25 +1,22 @@
 import { useFormContext } from 'react-hook-form'
 import { ITag, defaultColorClass } from '../../store'
 import CategoryBadgeUI from './CategoryBadgeUI'
+import { ISearchForm } from '../Home'
 
 interface ICategoryBadge {
     name: string
     tag: ITag
     colorClass: string
-    submit: boolean
+    onSubmit?: (data: ISearchForm) => Promise<void>
 }
 
-const CategoryBadge = ({ name, tag, colorClass, submit }: ICategoryBadge) => {
-    const { register, handleSubmit, clearErrors } = useFormContext()
-
-    const onValid = (data: any) => {
-        console.log(data)
-    }
+const CategoryBadge = ({ name, tag, colorClass, onSubmit }: ICategoryBadge) => {
+    const { register, handleSubmit, clearErrors } = useFormContext<ISearchForm>()
 
     const registerSettings = {
         onChange: () => {
-            if (submit) {
-                handleSubmit(onValid)()
+            if (onSubmit !== undefined) {
+                handleSubmit(onSubmit)()
                 return
             }
 
