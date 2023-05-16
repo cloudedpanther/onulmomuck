@@ -20,6 +20,7 @@ const Home = () => {
     const [keyword, setKeyword] = useState<string>('')
     const [selectedTags, setSelectedTags] = useState<string[]>([])
     const [isLastPage, setIsLastPage] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const methods = useForm<ISearchForm>()
     const { register, handleSubmit } = methods
@@ -34,6 +35,8 @@ const Home = () => {
     }
 
     const onValid = async (data: ISearchForm) => {
+        setIsLoading(true)
+
         const { search } = data
         const tags = Object.keys(data).filter((key) => {
             if (key === 'search') return false
@@ -49,6 +52,8 @@ const Home = () => {
             selectedTags: tags,
         })
         initStates(fetchedPosts, lastCheckIndex)
+
+        setIsLoading(false)
     }
 
     const handleNextPage = async () => {
@@ -96,7 +101,7 @@ const Home = () => {
     }, [])
 
     return (
-        <div className="px-4 py-6 max-w-6xl mx-auto">
+        <div className={`px-4 py-6 max-w-6xl mx-auto${isLoading ? ' pointer-events-none' : ''}`}>
             <form onSubmit={handleSubmit(onValid)}>
                 <FormProvider {...methods}>
                     <CategorySelector onSubmit={onValid} />

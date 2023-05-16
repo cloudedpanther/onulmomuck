@@ -7,6 +7,9 @@ import MyPage from '../components/Mypage'
 import ViewPost from '../components/ViewPost'
 import WritePost from '../components/WritePost'
 import Logout from '../components/Logout'
+import MyInfo from '../components/Mypage/MyInfo'
+import MyPosts from '../components/Mypage/MyPosts'
+import MyLikes from '../components/Mypage/MyLikes'
 
 const router = createBrowserRouter([
     {
@@ -30,8 +33,22 @@ const router = createBrowserRouter([
                 element: <Logout />,
             },
             {
-                path: 'mypage',
+                path: 'mypage/',
                 element: <MyPage />,
+                children: [
+                    {
+                        path: '',
+                        element: <MyInfo />,
+                    },
+                    {
+                        path: 'posts',
+                        element: <MyPosts />,
+                    },
+                    {
+                        path: 'likes',
+                        element: <MyLikes />,
+                    },
+                ],
             },
             {
                 path: 'post/view/:id',
