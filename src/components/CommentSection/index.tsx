@@ -136,15 +136,19 @@ const CommentSection = ({ pid }: ICommentSection) => {
                             cur,
                         ])}
             </ul>
-            <div className="btn-group mt-4 w-full flex justify-center">
-                <button className="btn" onClick={handlePrevPage}>
-                    «
-                </button>
-                <button className="btn pointer-events-none">Page {page}</button>
-                <button className="btn" onClick={handleNextPage}>
-                    »
-                </button>
-            </div>
+            {comments.length > 0 ? (
+                <div className="btn-group mt-4 w-full flex justify-center">
+                    <button className="btn" onClick={handlePrevPage}>
+                        «
+                    </button>
+                    <button className="btn pointer-events-none">Page {page}</button>
+                    <button className="btn" onClick={handleNextPage}>
+                        »
+                    </button>
+                </div>
+            ) : (
+                <></>
+            )}
         </section>
     )
 }
