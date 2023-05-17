@@ -127,8 +127,53 @@ export const getPosts = async (
             }
 
             const newPost = {
-                createdAt,
                 id: docs.id,
+                createdAt,
+                title,
+                thumbnailUrl,
+                totalComments,
+                totalLikes: likeUids.length,
+            }
+
+            posts = [...posts, newPost]
+        })
+    }
+
+    return { posts, lastCheckIndex }
+}
+
+export const getMyPosts = async (pageSize: number, lastVisible: number, uid: string) => {
+    let posts: IPost[] = []
+
+    const postRef = collection(db, 'post')
+
+    let lastCheckIndex = lastVisible || Infinity
+
+    while (posts.length < pageSize) {
+        const q = query(
+            postRef,
+            orderBy('createdAt', 'desc'),
+            startAfter(lastCheckIndex),
+            limit(pageSize)
+        )
+
+        const postSnap = await getDocs(q)
+
+        if (postSnap.docs.length === 0) break
+
+        postSnap.forEach((docs) => {
+            const { createdAt, title, thumbnailUrl, totalComments, likeUids, createrUid } =
+                docs.data()
+
+            if (posts.length === pageSize) return
+
+            lastCheckIndex = Number(createdAt)
+
+            if (uid !== createrUid) return
+
+            const newPost = {
+                id: docs.id,
+                createdAt,
                 title,
                 thumbnailUrl,
                 totalComments,

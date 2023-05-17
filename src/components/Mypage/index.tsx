@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, Navigate, Outlet } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useRecoilValue } from 'recoil'
 import { userState } from '../../store'
 
@@ -22,7 +22,36 @@ const BASIC_TAB_CLASS = 'tab tab-bordered'
 
 const MyPage = () => {
     const user = useRecoilValue(userState)
-    const [activeIndex, setActiveIndex] = useState(0)
+    const [activeIndex, setActiveIndex] = useState<number>()
+    const location = useLocation()
+
+    const saveActiveIndex = (index: number) => {
+        setActiveIndex(index)
+        localStorage.setItem('activeTabIndex', JSON.stringify(index))
+    }
+
+    const handleActiveIndexChange = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        const selectedIndex = Number(e.currentTarget.dataset.index)
+
+        if (isNaN(selectedIndex)) return
+
+        saveActiveIndex(selectedIndex)
+    }
+
+    useEffect(() => {
+        if (location.pathname === '/mypage') {
+            saveActiveIndex(0)
+            return
+        }
+
+        const json = localStorage.getItem('activeTabIndex')
+
+        if (json === null) return
+
+        const localActiveTabIndex = JSON.parse(json)
+
+        setActiveIndex(localActiveTabIndex)
+    })
 
     return (
         <>
@@ -39,7 +68,8 @@ const MyPage = () => {
                                     className={`${BASIC_TAB_CLASS}${
                                         index === activeIndex ? ' tab-active' : ''
                                     }`}
-                                    onClick={() => setActiveIndex(index)}
+                                    data-index={index}
+                                    onClick={handleActiveIndexChange}
                                 >
                                     {tab.text}
                                 </Link>
