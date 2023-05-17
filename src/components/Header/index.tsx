@@ -13,12 +13,17 @@ const Header = () => {
         setIsDropdownOpen((prev) => !prev)
     }
 
+    const handleLogoClick = () => {
+        sessionStorage.removeItem('homePosts')
+    }
+
     return (
         <div className="fixed navbar bg-white py-0 shadow z-50">
             <div className="flex-1">
                 <Link
                     to="/"
                     className="btn btn-ghost  hover:bg-inherit normal-case text-xl text-orange-500"
+                    onClick={handleLogoClick}
                 >
                     오늘모먹
                 </Link>

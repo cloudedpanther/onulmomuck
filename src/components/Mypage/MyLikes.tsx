@@ -4,26 +4,54 @@ import { useRecoilValue } from 'recoil'
 import { userState } from '../../store'
 import PostList from '../PostList'
 
+interface IPostData {
+    posts: IPost[]
+    accPosts: IPost[]
+    page: number
+    lastVisible: number
+    accLastVisible: number[]
+    isLastPage: boolean
+}
+
 const PAGE_SIZE = 8
 
 const MyLikes = () => {
     const user = useRecoilValue(userState)
 
-    const [posts, setPosts] = useState<IPost[]>([])
-    const [accPosts, setAccPosts] = useState<IPost[]>([])
-    const [page, setPage] = useState(0)
-    const [lastVisible, setLastVisible] = useState<number>(Infinity)
-    const [accLastVisible, setAccLastVisible] = useState<number[]>([])
-    const [isLastPage, setIsLastPage] = useState(false)
+    const [postData, setPostData] = useState<IPostData>({
+        posts: [],
+        accPosts: [],
+        page: 1,
+        lastVisible: Infinity,
+        accLastVisible: [],
+        isLastPage: false,
+    })
+
+    const { posts, accPosts, page, lastVisible, isLastPage } = postData
+
     const [isLoading, setIsLoading] = useState(false)
 
-    const initStates = (fetchedPosts: IPost[], lastCheckIndex: number) => {
-        setPosts(fetchedPosts)
-        setAccPosts([])
-        setLastVisible(lastCheckIndex)
-        setAccLastVisible([])
-        setPage(1)
-        setIsLastPage(false)
+    const cacheStates = (newState: IPostData) => {
+        sessionStorage.setItem('myLikes', JSON.stringify(newState))
+    }
+
+    const loadCachedStates = () => {
+        const json = sessionStorage.getItem('myLikes')
+
+        if (!json) return false
+
+        const { posts, accPosts, page, lastVisible, accLastVisible, isLastPage } = JSON.parse(json)
+
+        setPostData({
+            posts,
+            accPosts,
+            page,
+            lastVisible,
+            accLastVisible,
+            isLastPage,
+        })
+
+        return true
     }
 
     const handleNextPage = async () => {
@@ -38,28 +66,47 @@ const MyLikes = () => {
         )
 
         if (fetchedPosts.length === 0) {
-            setIsLastPage(true)
+            setPostData((prev) => {
+                const newState = {
+                    ...prev,
+                    isLastPage: true,
+                }
+                cacheStates(newState)
+                return newState
+            })
             return
         }
 
-        setAccPosts((prev) => [...prev, ...posts])
-        setPosts(fetchedPosts)
-        setAccLastVisible((prev) => [...prev, lastVisible])
-        setLastVisible(lastCheckIndex)
-        setPage((prev) => prev + 1)
+        setPostData((prev) => {
+            const newState = {
+                ...prev,
+                posts: fetchedPosts,
+                accPosts: [...prev.accPosts, ...prev.posts],
+                lastVisible: lastCheckIndex,
+                accLastVisible: [...prev.accLastVisible, prev.lastVisible],
+                page: prev.page + 1,
+            }
+            cacheStates(newState)
+            return newState
+        })
     }
 
     const handlePrevPage = () => {
         if (accPosts.length === 0) return
 
-        const prevPagePosts = accPosts.slice(-1 * PAGE_SIZE)
-        setPosts(prevPagePosts)
-        setAccPosts((prev) => prev.slice(0, -1 * PAGE_SIZE))
-        setPage((prev) => prev - 1)
-        const prevLastVisible = accLastVisible.slice(-1)[0]
-        setLastVisible(prevLastVisible)
-        setAccLastVisible((prev) => prev.slice(0, -1))
-        setIsLastPage(false)
+        setPostData((prev) => {
+            const newState = {
+                ...prev,
+                posts: prev.accPosts.slice(-1 * PAGE_SIZE),
+                accPosts: prev.accPosts.slice(0, -1 * PAGE_SIZE),
+                page: prev.page - 1,
+                lastVisible: prev.accLastVisible.slice(-1)[0],
+                accLastVisible: prev.accLastVisible.slice(0, -1),
+                isLastPage: false,
+            }
+            cacheStates(newState)
+            return newState
+        })
     }
 
     useEffect(() => {
@@ -68,12 +115,23 @@ const MyLikes = () => {
                 return
             }
 
+            if (loadCachedStates()) return
+
             const { posts: fetchedPosts, lastCheckIndex } = await getMyLikes(
                 PAGE_SIZE,
                 lastVisible,
                 user?.uid
             )
-            initStates(fetchedPosts, lastCheckIndex)
+
+            setPostData((prev) => {
+                const newState = {
+                    ...prev,
+                    posts: fetchedPosts,
+                    lastVisible: lastCheckIndex,
+                }
+                cacheStates(newState)
+                return newState
+            })
         }
         setIsLoading(true)
         initMyLikes()
