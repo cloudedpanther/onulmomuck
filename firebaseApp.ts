@@ -9,11 +9,13 @@ import {
     limit,
     orderBy,
     query,
+    setDoc,
     startAfter,
     updateDoc,
 } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 import { ICategory, ITag } from './src/store'
+import { parseDate } from './src/utils'
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY,
@@ -255,9 +257,77 @@ export const getPost = async (pid: string) => {
 }
 
 export const updateLiked = async (pid: string, likeUids: string[]) => {
-    console.log('1')
     await updateDoc(doc(db, 'post', pid), {
         likeUids,
     })
-    console.log('2')
+}
+
+interface ICreateNewComment {
+    pid: string
+    uid: string
+    createrName: string
+    content: string
+}
+
+export const createNewComment = async ({ pid, uid, createrName, content }: ICreateNewComment) => {
+    const postDoc = doc(db, 'post', pid)
+    const postSnap = await getDoc(postDoc)
+    const postData = postSnap.data()
+
+    if (!postData) return
+
+    const { totalComments } = postData
+
+    await updateDoc(postDoc, {
+        totalComments: totalComments + 1,
+    })
+
+    const commentsRef = collection(postDoc, 'comments')
+    await setDoc(doc(commentsRef), {
+        uid,
+        createrName,
+        content,
+        createdAt: Date.now(),
+    })
+}
+
+export interface IComment {
+    id: string
+    createrName: string
+    content: string
+    createdAt: string
+}
+
+export const getComments = async (pageSize: number, pid: string, lastVisible?: number) => {
+    let comments: IComment[] = []
+
+    const postDoc = doc(db, 'post', pid)
+    const commentsRef = collection(postDoc, 'comments')
+
+    let lastCheckIndex = lastVisible || Infinity
+
+    const q = query(
+        commentsRef,
+        orderBy('createdAt', 'desc'),
+        startAfter(lastCheckIndex),
+        limit(pageSize)
+    )
+
+    const commentsSnap = await getDocs(q)
+
+    commentsSnap.forEach((comment) => {
+        const { createrName, content, createdAt } = comment.data()
+
+        lastCheckIndex = createdAt
+
+        const commentData = {
+            id: comment.id,
+            createrName,
+            content,
+            createdAt: parseDate(new Date(createdAt)),
+        }
+        comments = [...comments, commentData]
+    })
+
+    return { comments, lastCheckIndex }
 }

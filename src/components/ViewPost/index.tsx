@@ -5,6 +5,8 @@ import { getPost, getPostCreaterName, updateLiked } from '../../../firebaseApp'
 import { useRecoilValue } from 'recoil'
 import { categoriesState, defaultColorClass, userState } from '../../store'
 import CategoryBadgeUI from '../Category/CategoryBadgeUI'
+import CommentSection from '../CommentSection'
+import { parseDate } from '../../utils'
 
 interface IPostData {
     title: string
@@ -17,14 +19,6 @@ interface IPostData {
     tags: string[]
 }
 
-const parseDate = (fullDate: Date) => {
-    const year = String(fullDate.getFullYear())
-    const month = String(fullDate.getMonth()).padStart(2, '0')
-    const date = String(fullDate.getDate()).padStart(2, '0')
-
-    return `${year}.${month}.${date}`
-}
-
 const ViewPost = () => {
     const navigate = useNavigate()
     const location = useLocation()
@@ -33,8 +27,6 @@ const ViewPost = () => {
 
     const user = useRecoilValue(userState)
     const categories = useRecoilValue(categoriesState)
-
-    console.log(categories)
 
     const [init, setInit] = useState(false)
     const [post, setPost] = useState<IPostData>()
@@ -174,6 +166,7 @@ const ViewPost = () => {
                             </button>
                         </div>
                     </div>
+                    <CommentSection pid={pid} />
                 </div>
             )}
             <input
