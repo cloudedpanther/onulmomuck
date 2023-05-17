@@ -27,7 +27,7 @@ const PostCard = ({ postData }: IPostCard) => {
                                 </p>
                             </div>
                             <div className="flex items-center">
-                                <FilledHeart className="w-5 h-5 mr-2" />
+                                <FilledHeart className="w-5 h-5 mr-2" colorClass="fill-black" />
                                 <p className="grow-0 text-sm font-bold w-8 truncate">
                                     {totalLikes}
                                 </p>

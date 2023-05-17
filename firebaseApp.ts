@@ -2,12 +2,15 @@ import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import {
     collection,
+    doc,
+    getDoc,
     getDocs,
     getFirestore,
     limit,
     orderBy,
     query,
     startAfter,
+    updateDoc,
 } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 import { ICategory, ITag } from './src/store'
@@ -26,6 +29,18 @@ const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 export const db = getFirestore(app)
 export const storage = getStorage(app)
+
+export const getPostCreaterName = async (uid: string) => {
+    const userRef = collection(db, 'user')
+    const userDoc = doc(userRef, uid)
+    const userSnap = await getDoc(userDoc)
+
+    const userData = userSnap.data()
+    if (!userData) return undefined
+
+    const { name } = userData
+    return name
+}
 
 export const getCategories = async () => {
     let categories: ICategory[] = []
@@ -229,4 +244,20 @@ export const getMyLikes = async (pageSize: number, lastVisible: number, uid: str
     }
 
     return { posts, lastCheckIndex }
+}
+
+export const getPost = async (pid: string) => {
+    const postRef = collection(db, 'post')
+    const postDoc = doc(postRef, pid)
+    const postSnap = await getDoc(postDoc)
+
+    return postSnap.data()
+}
+
+export const updateLiked = async (pid: string, likeUids: string[]) => {
+    console.log('1')
+    await updateDoc(doc(db, 'post', pid), {
+        likeUids,
+    })
+    console.log('2')
 }
