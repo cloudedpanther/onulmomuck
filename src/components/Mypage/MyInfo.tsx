@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 import { userState } from '../../store'
@@ -57,6 +58,8 @@ const registerSettings = {
 const MyInfo = () => {
     const user = useRecoilValue(userState)
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const {
         register: registerNickname,
         handleSubmit: handleSubmitNickname,
@@ -74,6 +77,8 @@ const MyInfo = () => {
     } = useForm<IPasswordForm>()
 
     const onNicknameSubmit = async (data: INicknameForm) => {
+        setIsLoading(true)
+
         const { nickname } = data
 
         try {
@@ -87,9 +92,13 @@ const MyInfo = () => {
         } catch (error) {
             console.log(error)
         }
+
+        setIsLoading(false)
     }
 
     const onPasswordSubmit = async (data: IPasswordForm) => {
+        setIsLoading(true)
+
         const { password, passwordConfig } = data
 
         if (password !== passwordConfig) {
@@ -106,12 +115,16 @@ const MyInfo = () => {
         } catch (error) {
             console.log(error)
         }
+
+        setIsLoading(false)
     }
 
     return (
         <>
             <form
-                className="border border-2 border-slate-500 w-content p-4 rounded"
+                className={`border border-2 border-slate-500 w-content p-4 rounded${
+                    isLoading ? ' pointer-events-none' : ''
+                }`}
                 onSubmit={handleSubmitNickname(onNicknameSubmit)}
             >
                 <label htmlFor="nickname" className="label">
