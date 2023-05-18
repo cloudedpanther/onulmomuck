@@ -14,4 +14,4 @@
 
 ### Database: Firebase
 
-<img src='/readme-img-1.png' />
+![readme-img-1](https://github.com/cloudedpanther/onulmomuck/assets/76900250/540da37b-decc-4968-b9a5-8ebd9d09d592)
