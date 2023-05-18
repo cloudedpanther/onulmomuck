@@ -38,8 +38,6 @@ const Root = () => {
             'historyStack',
             JSON.stringify(newStack.length > 5 ? newStack.slice(-5) : newStack)
         )
-
-        console.log(newStack)
     }, [location])
 
     useEffect(() => {

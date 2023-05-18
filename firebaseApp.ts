@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import {
     collection,
+    deleteDoc,
     doc,
     getDoc,
     getDocs,
@@ -254,6 +255,27 @@ export const getPost = async (pid: string) => {
     const postSnap = await getDoc(postDoc)
 
     return postSnap.data()
+}
+
+export const editPost = async (pid: string, text: string) => {
+    try {
+        await updateDoc(doc(db, 'post', pid), {
+            text,
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const deletePost = async (pid: string) => {
+    const postRef = collection(db, 'post')
+    const postDoc = doc(postRef, pid)
+
+    try {
+        await deleteDoc(postDoc)
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 export const updateLiked = async (pid: string, likeUids: string[]) => {

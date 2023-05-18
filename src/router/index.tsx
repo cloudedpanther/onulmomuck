@@ -10,6 +10,7 @@ import Logout from '../components/Logout'
 import MyInfo from '../components/Mypage/MyInfo'
 import MyPosts from '../components/Mypage/MyPosts'
 import MyLikes from '../components/Mypage/MyLikes'
+import EditPost from '../components/EditPost'
 
 const router = createBrowserRouter([
     {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
             {
                 path: 'post/write',
                 element: <WritePost />,
+            },
+            {
+                path: 'post/edit/:id',
+                element: <EditPost />,
             },
         ],
     },

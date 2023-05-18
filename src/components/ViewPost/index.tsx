@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { FilledHeart, OutlineHeart } from '../Icons'
-import { getPost, getPostCreaterName, updateLiked } from '../../../firebaseApp'
+import { deletePost, getPost, getPostCreaterName, updateLiked } from '../../../firebaseApp'
 import { useRecoilValue } from 'recoil'
 import { categoriesState, defaultColorClass, userState } from '../../store'
 import CategoryBadgeUI from '../Category/CategoryBadgeUI'
@@ -31,6 +31,7 @@ const ViewPost = () => {
     const [init, setInit] = useState(false)
     const [post, setPost] = useState<IPostData>()
     const [liked, setLiked] = useState(false)
+    const [deleteModal, setDeleteModal] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [loginConfirmChecked, setLoginConfirmChecked] = useState(false)
 
@@ -73,6 +74,17 @@ const ViewPost = () => {
         }
         setLiked((prev) => !prev)
         setIsLoading(false)
+    }
+
+    const handleEditPost = () => {
+        navigate(`/post/edit/${pid}`)
+    }
+
+    const handleDeletePost = async () => {
+        setIsLoading(true)
+        await deletePost(pid)
+        sessionStorage.removeItem('homePosts')
+        navigate('/')
     }
 
     useEffect(() => {
@@ -121,7 +133,24 @@ const ViewPost = () => {
                 </div>
             ) : (
                 <div className="px-4 py-6 max-w-6xl mx-auto">
-                    <h2 className="text-xl font-bold">{post.title}</h2>
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-xl font-bold">{post.title}</h2>
+                        {user?.displayName === post?.createrName ? (
+                            <div className="flex gap-2">
+                                <button className="btn btn-sm text-xs" onClick={handleEditPost}>
+                                    수정
+                                </button>
+                                <button
+                                    className="btn btn-sm text-xs"
+                                    onClick={() => setDeleteModal(true)}
+                                >
+                                    삭제
+                                </button>
+                            </div>
+                        ) : (
+                            <></>
+                        )}
+                    </div>
                     <div className="mt-4 text-sm text-gray-500 flex items-center">
                         <p>{post.createrName}</p>
                         <p className="mx-2">|</p>
@@ -131,13 +160,13 @@ const ViewPost = () => {
                         </p>
                         <p className="ml-2">{post.totalLikes}</p>
                     </div>
-                    <div className="my-4 whitespace-nowrap overflow-scroll scrollbar-hide">
+                    <div className="my-4 whitespace-nowrap overflow-scroll scrollbar-hide flex gap-2">
                         {post.tags.map((tagId) => {
                             const { colorClass, text } = getTagData(tagId)
                             return (
                                 <CategoryBadgeUI
                                     key={`tag-${tagId}`}
-                                    className={`${colorClass} mr-2`}
+                                    className={colorClass}
                                     text={text}
                                 />
                             )
@@ -169,24 +198,48 @@ const ViewPost = () => {
                     <CommentSection pid={pid} />
                 </div>
             )}
-            <input
-                type="checkbox"
-                id="loginConfirm"
-                className="modal-toggle"
-                checked={loginConfirmChecked}
-                onChange={() => {}}
-            />
-            <div className="modal">
-                <div className="modal-box">
-                    <p className="py-4">로그인 후에 이용하실 수 있습니다.</p>
-                    <div className="modal-action">
-                        <label
-                            htmlFor="loginConfirm"
-                            className="btn"
-                            onClick={() => setLoginConfirmChecked(false)}
-                        >
-                            확인
-                        </label>
+            <div>
+                <input
+                    type="checkbox"
+                    id="loginConfirm"
+                    className="modal-toggle"
+                    checked={loginConfirmChecked}
+                    onChange={() => {}}
+                />
+                <div className="modal">
+                    <div className="modal-box">
+                        <p className="py-4">로그인 후에 이용하실 수 있습니다.</p>
+                        <div className="modal-action">
+                            <label
+                                htmlFor="loginConfirm"
+                                className="btn"
+                                onClick={() => setLoginConfirmChecked(false)}
+                            >
+                                확인
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <input
+                    type="checkbox"
+                    id="deletePost"
+                    className="modal-toggle"
+                    checked={deleteModal}
+                    onChange={() => {}}
+                />
+                <div className="modal">
+                    <div className="modal-box">
+                        <p className="py-4">정말 삭제하시겠습니까?</p>
+                        <div className="modal-action">
+                            <button className="btn" onClick={handleDeletePost}>
+                                확인
+                            </button>
+                            <button className="btn" onClick={() => setDeleteModal(false)}>
+                                취소
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
