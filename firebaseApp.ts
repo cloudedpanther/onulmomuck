@@ -33,6 +33,13 @@ export const auth = getAuth(app)
 export const db = getFirestore(app)
 export const storage = getStorage(app)
 
+export const storeUserName = async (uid: string, username: string) => {
+    const userRef = collection(db, 'user')
+    await setDoc(doc(userRef, uid), {
+        name: username,
+    })
+}
+
 export const getPostCreaterName = async (uid: string) => {
     const userRef = collection(db, 'user')
     const userDoc = doc(userRef, uid)

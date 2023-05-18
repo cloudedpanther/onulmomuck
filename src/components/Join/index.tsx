@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
-import { auth } from '../../../firebaseApp'
+import { auth, storeUserName } from '../../../firebaseApp'
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { useNavigate } from 'react-router-dom'
 
 const JoinFormKeys = {
     EMAIL: 'email',
@@ -113,6 +114,8 @@ const Join = () => {
         setError,
     } = useForm<IJoinForm>({ mode: 'onBlur' })
 
+    const navigate = useNavigate()
+
     const onValid = async (data: IJoinForm) => {
         const { email, userName, password, passwordConfig } = data
 
@@ -128,6 +131,10 @@ const Join = () => {
                 await updateProfile(auth.currentUser, {
                     displayName: userName,
                 })
+                await storeUserName(auth.currentUser.uid, userName)
+
+                navigate('/')
+                location.reload()
             }
         } catch (error) {
             console.log(error)

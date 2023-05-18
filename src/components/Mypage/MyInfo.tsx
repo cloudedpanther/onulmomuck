@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 import { userState } from '../../store'
-import { auth } from '../../../firebaseApp'
+import { auth, storeUserName } from '../../../firebaseApp'
 import { updatePassword, updateProfile } from 'firebase/auth'
 
 interface INicknameForm {
@@ -86,6 +86,7 @@ const MyInfo = () => {
                 await updateProfile(auth.currentUser, {
                     displayName: nickname,
                 })
+                await storeUserName(auth.currentUser.uid, nickname)
 
                 location.reload()
             }
