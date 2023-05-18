@@ -14,4 +14,13 @@
 
 ### Database: Firebase
 
+## 프로젝트 주요 기능
+
+### 먹은 음식 공유 & 소통
 ![readme-img-1](https://github.com/cloudedpanther/onulmomuck/assets/76900250/540da37b-decc-4968-b9a5-8ebd9d09d592)
+
+### 식사 메뉴 참고
+![readme-img-2](https://github.com/cloudedpanther/onulmomuck/assets/76900250/a479d0b9-239a-4177-9840-a37d204413d1)
+
+### 내가 먹은 음식 기록
+![readme-img-3](https://github.com/cloudedpanther/onulmomuck/assets/76900250/0cc0d344-e04b-49ea-9e81-683ead917947)
