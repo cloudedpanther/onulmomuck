@@ -36,26 +36,26 @@
 -   `식사 시간(아침, 점심 등)`과 `음식 종류(중식, 한식 등)`에 따른 카테고리로 구분해서 검색 결과를 볼 수 있습니다.
 -   검색 시 고려해야 하는 많은 카테고리 요소와 키워드를 다루기 위해 react-hook-form 라이브러리를 사용했습니다.
 
-        ```ts
-        const { register, handleSubmit, clearErrors } = useFormContext<ISearchForm>()
-        ```
+    ```ts
+    const { register, handleSubmit, clearErrors } = useFormContext<ISearchForm>()
+    ```
 
-        ```jsx
-            <label htmlFor={tag.id} className="swap">
-                <input type="checkbox" id={tag.id} {...register(tag.id, registerSettings)} />
+    ```jsx
+    <label htmlFor={tag.id} className="swap">
+        <input type="checkbox" id={tag.id} {...register(tag.id, registerSettings)} />
 
-                <CategoryBadgeUI className={`${defaultColorClass} swap-off`} text={tag.text} />
+        <CategoryBadgeUI className={`${defaultColorClass} swap-off`} text={tag.text} />
 
-                <CategoryBadgeUI className={`${colorClass} swap-on`} text={tag.text} />
-            </label>
+        <CategoryBadgeUI className={`${colorClass} swap-on`} text={tag.text} />
+    </label>
 
-            <input
-                type="text"
-                placeholder="Search…"
-                className="input input-bordered focus:outline-none w-screen"
-                {...register('search')}
-            />
-        ```
+    <input
+        type="text"
+        placeholder="Search…"
+        className="input input-bordered focus:outline-none w-screen"
+        {...register('search')}
+    />
+    ```
 
 <br />
 
