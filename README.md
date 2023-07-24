@@ -49,12 +49,7 @@
         <CategoryBadgeUI className={`${colorClass} swap-on`} text={tag.text} />
     </label>
 
-    <input
-        type="text"
-        placeholder="Search…"
-        className="input input-bordered focus:outline-none w-screen"
-        {...register('search')}
-    />
+    <input type="text" placeholder="Search…" className="input input-bordered focus:outline-none w-screen" {...register('search')} />
     ```
 
 <br />
